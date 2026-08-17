@@ -3,192 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>墨尔本与大洋路房车自驾路线图</title>
+    <title>2027墨尔本澳网 & 大洋路房车自驾全攻略</title>
     <!-- 引入 Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        :root {
+            --primary: #2c3e50;
+            --accent-coastal: #e74c3c;
+            --accent-inland: #3498db;
+            --bg: #f4f6f9;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f4f6f9;
+            padding: 0;
+            background-color: var(--bg);
             color: #333;
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 5px;
-            color: #1a252f;
-        }
-        p.subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: #fff;
+        header {
+            background: var(--primary);
+            color: white;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
         }
-        #map {
-            height: 520px;
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            z-index: 1;
-        }
-        .legend-box {
+        header h1 { margin: 0 0 8px 0; font-size: 24px; }
+        header p { margin: 0; opacity: 0.8; font-size: 14px; }
+
+        .main-container {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
             gap: 20px;
-            margin-bottom: 20px;
-            font-size: 14px;
         }
-        .legend-item {
+
+        @media (min-width: 900px) {
+            .main-container {
+                flex-direction: row;
+            }
+            .itinerary-pane { flex: 1.2; height: 82vh; overflow-y: auto; padding-right: 10px; }
+            .map-pane { flex: 1; position: sticky; top: 20px; height: 82vh; }
+        }
+
+        #map {
+            width: 100%;
+            height: 450px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 900px) { #map { height: 100%; } }
+
+        /* 天数卡片样式 */
+        .day-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        .day-card:hover { transform: translateY(-2px); }
+        .day-card.coastal { border-left-color: var(--accent-coastal); }
+        .day-card.inland { border-left-color: var(--accent-inland); }
+
+        .day-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 6px;
+        }
+        .day-tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: #eee;
+            color: #555;
+            font-weight: normal;
+        }
+
+        /* 景点与小吃标签块 */
+        .section-block { margin-top: 10px; }
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
         }
-        .line-coastal {
-            width: 25px;
-            height: 4px;
-            background-color: #e74c3c;
-            border-radius: 2px;
+        .badge-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        .line-inland {
-            width: 25px;
-            height: 4px;
-            background-color: #3498db;
-            border-radius: 2px;
-        }
-        .route-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-        }
-        .card {
-            background: #f8f9fa;
-            border-left: 4px solid #2c3e50;
-            padding: 12px 15px;
-            border-radius: 0 6px 6px 0;
-        }
-        .card h3 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            color: #2c3e50;
-        }
-        .card p {
-            margin: 0;
-            font-size: 13px;
-            color: #555;
-            line-height: 1.5;
-        }
+        .badge-spot { background: #eef7fe; color: #1976d2; border: 1px solid #bbdefb; }
+        .badge-spot:hover { background: #bbdefb; }
+        .badge-food { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+        .badge-food:hover { background: #ffe0b2; }
+
+        .desc-text { font-size: 13px; color: #555; line-height: 1.6; margin: 8px 0; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>墨尔本 & 大洋路房车自驾路线图</h1>
-    <p class="subtitle">看澳网 + 沿海风光 + 考拉营地 + 十二使徒岩环线</p>
+<header>
+    <h1>2027 墨尔本澳网 & 大洋路房车自驾 10 天行程</h1>
+    <p>看球 + 市区美食 + 考拉营地 + 12使徒岩全景指南</p>
+</header>
 
-    <div class="legend-box">
-        <div class="legend-item">
-            <div class="line-coastal"></div>
-            <span>去程：沿海 B100 公路 (景观线)</span>
+<div class="main-container">
+    <!-- 左侧/上侧：每日行程列表 -->
+    <div class="itinerary-pane">
+        
+        <!-- Day 1 -->
+        <div class="day-card">
+            <div class="day-title">
+                <span>Day 1 (1/16): 抵达墨尔本 & 巷道漫步</span>
+                <span class="day-tag">市区文化</span>
+            </div>
+            <div class="desc-text">办理入住后，漫步于墨尔本最具特色的涂鸦巷与咖啡小巷，感受南半球咖啡之都的独特氛围。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-37.8176, 144.9669], 15)">涂鸦街 Hosier Lane</span>
+                    <span class="badge badge-spot" onclick="focusMap([-37.8166, 144.9655], 15)">Degraves St 咖啡巷</span>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-title">🥐 特色小吃与解析</div>
+                <div class="badge-container">
+                    <span class="badge badge-food" onclick="alert('【Lune Croissanterie】: 被外媒评为高水准的法式牛角包，招牌为经典原味与杏仁牛角，外皮极度酥脆。')">Lune 可颂</span>
+                    <span class="badge badge-food" onclick="alert('【澳式白咖啡 Flat White】: 相比拿铁，它的奶泡更薄更平滑，咖啡与牛奶融合度更高，咖啡味更浓郁。')">Flat White 咖啡</span>
+                </div>
+            </div>
         </div>
-        <div class="legend-item">
-            <div class="line-inland"></div>
-            <span>回程：内陆 A1 高速 (快捷线)</span>
+
+        <!-- Day 2 -->
+        <div class="day-card">
+            <div class="day-title">
+                <span>Day 2 (1/17): 澳网观赛日 (Rod Laver)</span>
+                <span class="day-tag">澳网盛宴</span>
+            </div>
+            <div class="desc-text">全天在墨尔本公园感受顶级网球赛事的现场热力，体验户外大屏狂欢与球场拉锯战。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-37.8216, 144.9786], 15)">罗德拉沃球场 Rod Laver Arena</span>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-title">🍢 特色小吃与解析</div>
+                <div class="badge-container">
+                    <span class="badge badge-food" onclick="alert('【Chin Chin】: 墨尔本超火爆的现代东南亚菜，推荐手抓烤猪肉包、泰式咖喱和青木瓜沙拉。')">Chin Chin 东南亚菜</span>
+                    <span class="badge badge-food" onclick="alert('【AOC 球场限定冰淇淋】: 观赛必吃，墨尔本酷暑下最受欢迎的球场解暑甜品。')">球场观赛冰淇淋</span>
+                </div>
+            </div>
         </div>
+
+        <!-- Day 3 -->
+        <div class="day-card">
+            <div class="day-title">
+                <span>Day 3 (1/18): 艺术与维多利亚市场</span>
+                <span class="day-tag">购物&艺术</span>
+            </div>
+            <div class="desc-text">前往南半球最古老的公共美术馆提升艺术体验，下午在 Queen Victoria 市场打卡本土熟食与海鲜。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-37.8226, 144.9689], 15)">维多利亚国家美术馆 NGV</span>
+                    <span class="badge badge-spot" onclick="focusMap([-37.8080, 144.9568], 15)">维多利亚女王市场</span>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-title">🦪 特色小吃与解析</div>
+                <div class="badge-container">
+                    <span class="badge badge-food" onclick="alert('【Hot Jam Donuts】: 女王市场餐车现做的热果酱甜甜圈，外酥内软，咬开有热流心酸甜果酱。')">热果酱甜甜圈</span>
+                    <span class="badge badge-food" onclick="alert('【Coffin Bay 生蚝】: 现场现开的新鲜澳洲生蚝，淋上鲜柠檬汁，口感清甜无腥味。')">现开澳洲生蚝</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 4 -->
+        <div class="day-card coastal">
+            <div class="day-title">
+                <span>Day 4 (1/19): 提房车 & 大洋路启程</span>
+                <span class="day-tag">自驾 Day 1</span>
+            </div>
+            <div class="desc-text">市区提房车、超市采购食材，驶入大洋路起点 Torquay，沿海岸线驶向度假小镇 Lorne。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-38.3384, 144.3237], 12)">托尔坎 Torquay (冲浪天堂)</span>
+                    <span class="badge badge-spot" onclick="focusMap([-38.4711, 144.0203], 13)">大洋路纪念牌坊</span>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-title">🐟 特色小吃与解析</div>
+                <div class="badge-container">
+                    <span class="badge badge-food" onclick="alert('【Fish & Chips 炸鱼薯条】: 在 Lorne 海边品尝现炸的平头鱼（Flathead）配薯条，典型的澳洲海滨小吃。')">海边炸鱼薯条</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 5 -->
+        <div class="day-card coastal">
+            <div class="day-title">
+                <span>Day 5 (1/20): 考拉营地与野生动物</span>
+                <span class="day-tag">核心体验</span>
+            </div>
+            <div class="desc-text">入住 Kennett River 营地，树上随处可见野生考拉，周边还有大量的野生彩色鹦鹉飞来互动。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-38.6708, 143.8564], 14)">Kennett River 考拉营地</span>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-title">🥩 特色小吃与解析</div>
+                <div class="badge-container">
+                    <span class="badge badge-food" onclick="alert('【澳洲营地烧烤 BBQ】: 房车营地均自带免费公用电烧烤台，可自行购买澳洲和牛肉眼排或羊排进行煎烤。')">自备安格斯/和牛 BBQ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 6 -->
+        <div class="day-card coastal">
+            <div class="day-title">
+                <span>Day 6 (1/21): 奥特威雨林与 12 使徒岩日落</span>
+                <span class="day-tag">大自然奇观</span>
+            </div>
+            <div class="desc-text">穿过巨型树蕨雨林，黄昏时分抵达 12 使徒岩，欣赏太平洋落日余晖洒在海蚀柱上的震撼绝景。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-38.7533, 143.5539], 13)">Maits Rest 树蕨雨林</span>
+                    <span class="badge badge-spot" onclick="focusMap([-38.6658, 143.1047], 14)">十二使徒岩 Twelve Apostles</span>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-title">🍦 特色小吃与解析</div>
+                <div class="badge-container">
+                    <span class="badge badge-food" onclick="alert('【Timboon 农场冰淇淋】: 位于附近的冰淇淋小镇，选用当地新鲜纯牛奶制作，口感浓郁顺滑。')">Timboon 手工冰淇淋</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 7 -->
+        <div class="day-card coastal">
+            <div class="day-title">
+                <span>Day 7 (1/22): 峡谷地貌与内陆折返</span>
+                <span class="day-tag">峡谷&内陆</span>
+            </div>
+            <div class="desc-text">游览阿德湖峡谷和伦敦桥，随后转向内陆 Princes Hwy 快捷平直公路，感受维多利亚州乡村农场风光。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-38.6480, 143.0590], 14)">阿德湖峡谷 Loch Ard Gorge</span>
+                    <span class="badge badge-spot" onclick="focusMap([-38.6231, 142.9320], 14)">伦敦桥 London Bridge</span>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-title">🥧 特色小吃与解析</div>
+                <div class="badge-container">
+                    <span class="badge badge-food" onclick="alert('【Aussie Meat Pie 澳洲肉饼】: 内陆小镇烘焙坊必买，酥皮里包裹着浓郁黑椒牛肉酱汁。')">内陆烘焙坊肉饼</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 8 - 10 -->
+        <div class="day-card inland">
+            <div class="day-title">
+                <span>Day 8-10 (1/23-1/25): 休整、还车与返程</span>
+                <span class="day-tag">顺利返程</span>
+            </div>
+            <div class="desc-text">途经吉朗小镇休整，随后返回墨尔本近郊营地。清理房车、归还车辆，前往机场结束愉快之旅。</div>
+            <div class="section-block">
+                <div class="section-title">📍 重点景点</div>
+                <div class="badge-container">
+                    <span class="badge badge-spot" onclick="focusMap([-38.1499, 144.3617], 13)">吉朗 Geelong 海滨木偶</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- 地图容器 -->
-    <div id="map"></div>
-
-    <!-- 节点简介 -->
-    <div class="route-details">
-        <div class="card" style="border-left-color: #e74c3c;">
-            <h3>1. 墨尔本市区 (Melbourne)</h3>
-            <p>看澳网、逛维多利亚美术馆与咖啡小巷，提房车启程。</p>
-        </div>
-        <div class="card" style="border-left-color: #27ae60;">
-            <h3>2. Kennett River 考拉营地</h3>
-            <p>关键停留点！住 Kennett River 营地，树上常能看到野生考拉。</p>
-        </div>
-        <div class="card" style="border-left-color: #f39c12;">
-            <h3>3. 十二使徒岩 (Twelve Apostles)</h3>
-            <p>大洋路精髓，欣赏日落海蚀柱奇观与洛克阿德峡谷。</p>
-        </div>
-        <div class="card" style="border-left-color: #3498db;">
-            <h3>4. 科拉克 (Colac) & 返程</h3>
-            <p>走内陆 Princes Hwy (A1) 轻松直达墨尔本还车。</p>
-        </div>
+    <!-- 右侧/下侧：交互地图 -->
+    <div class="map-pane">
+        <div id="map"></div>
     </div>
 </div>
 
 <!-- 引入 Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // 1. 初始化地图，中心设在大洋路区域
-    var map = L.map('map').setView([-38.35, 144.10], 9);
+    // 1. 初始化地图
+    var map = L.map('map').setView([-38.35, 144.00], 9);
 
     // 2. 加载OpenStreetMap图层
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    // 3. 标记关键地点 Coordinates [lat, lng]
-    var waypoints = [
-        { name: "墨尔本市区 (看澳网 & 提还房车)", coords: [-37.8136, 144.9631], desc: "行程起点与终点，观赛、购物与文化体验。" },
-        { name: "吉朗 (Geelong)", coords: [-38.1499, 144.3617], desc: "中途休整点，可看海滨彩色木偶。" },
-        { name: "托尔坎 (Torquay)", coords: [-38.3384, 144.3237], desc: "大洋路起点，冲浪胜地。" },
-        { name: "洛恩 (Lorne)", coords: [-38.5406, 143.9740], desc: "海边度假小镇，适合午餐。" },
-        { name: "Kennett River 考拉营地", coords: [-38.6708, 143.8564], desc: "<b>推荐宿营地！</b> 树上有野生考拉，鹦鹉众多。" },
-        { name: "奥特威雨林 (Maits Rest)", coords: [-38.7533, 143.5539], desc: "巨型树蕨雨林步道。" },
-        { name: "十二使徒岩 (Twelve Apostles)", coords: [-38.6658, 143.1047], desc: "大洋路核心地标，壮丽海蚀柱。" },
-        { name: "坎贝尔港 (Port Campbell)", coords: [-38.6189, 142.9944], desc: "折返点小镇，靠近洛克阿德峡谷。" },
-        { name: "科拉克 (Colac)", coords: [-38.3400, 143.5847], desc: "内陆 A1 高速途经小镇。" }
+    // 3. 地图定位联动函数
+    function focusMap(coords, zoom) {
+        map.flyTo(coords, zoom, { duration: 1.2 });
+    }
+
+    // 4. 关键标记点数据
+    var spots = [
+        { name: "墨尔本市区", coords: [-37.8136, 144.9631], popup: "<b>墨尔本市区</b><br>看澳网、尝美食与艺术探索。" },
+        { name: "罗德拉沃竞技场", coords: [-37.8216, 144.9786], popup: "<b>Rod Laver Arena</b><br>澳网核心主球场。" },
+        { name: "托尔坎 (Torquay)", coords: [-38.3384, 144.3237], popup: "<b>托尔坎</b><br>大洋路起点小镇。" },
+        { name: "Kennett River 考拉营地", coords: [-38.6708, 143.8564], popup: "<b>Kennett River 营地</b><br>野生考拉栖息地，夜宿首选。" },
+        { name: "十二使徒岩", coords: [-38.6658, 143.1047], popup: "<b>十二使徒岩</b><br>大洋路地标日落观景点。" },
+        { name: "阿德湖峡谷", coords: [-38.6480, 143.0590], popup: "<b>Loch Ard Gorge</b><br>雄伟的海蚀峡谷。" },
+        { name: "吉朗 (Geelong)", coords: [-38.1499, 144.3617], popup: "<b>吉朗</b><br>海滨彩色彩绘木偶人。" }
     ];
 
-    // 添加 Marker 标记
-    waypoints.forEach(function(pt) {
-        var marker = L.marker(pt.coords).addTo(map);
-        marker.bindPopup("<b>" + pt.name + "</b><br>" + pt.desc);
+    spots.forEach(function(pt) {
+        L.marker(pt.coords).addTo(map).bindPopup(pt.popup);
     });
 
-    // 4. 绘制去程路线（沿海 B100 公路）- 红色线
+    // 5. 绘制去程与回程折线
     var coastalRoute = [
-        [-37.8136, 144.9631], // 墨尔本
-        [-38.1499, 144.3617], // 吉朗
-        [-38.3384, 144.3237], // 托尔坎
-        [-38.5406, 143.9740], // 洛恩
-        [-38.6708, 143.8564], // Kennett River (考拉营地)
-        [-38.7533, 143.5539], // 奥特威雨林
-        [-38.6658, 143.1047], // 十二使徒岩
-        [-38.6189, 142.9944]  // 坎贝尔港
+        [-37.8136, 144.9631], [-38.1499, 144.3617], [-38.3384, 144.3237],
+        [-38.5406, 143.9740], [-38.6708, 143.8564], [-38.7533, 143.5539],
+        [-38.6658, 143.1047], [-38.6189, 142.9944]
     ];
-    var coastalPolyline = L.polyline(coastalRoute, {
-        color: '#e74c3c',
-        weight: 4,
-        opacity: 0.8
-    }).addTo(map);
+    L.polyline(coastalRoute, { color: '#e74c3c', weight: 4, opacity: 0.8 }).addTo(map);
 
-    // 5. 绘制回程路线（内陆 A1 公路）- 蓝色线
     var inlandRoute = [
-        [-38.6189, 142.9944], // 坎贝尔港
-        [-38.3400, 143.5847], // 科拉克
-        [-38.1499, 144.3617], // 吉朗
-        [-37.8136, 144.9631]  // 墨尔本
+        [-38.6189, 142.9944], [-38.3400, 143.5847], [-38.1499, 144.3617], [-37.8136, 144.9631]
     ];
-    var inlandPolyline = L.polyline(inlandRoute, {
-        color: '#3498db',
-        weight: 4,
-        opacity: 0.8,
-        dashArray: '8, 8' // 虚线效果区分内陆
-    }).addTo(map);
-
+    L.polyline(inlandRoute, { color: '#3498db', weight: 4, opacity: 0.8, dashArray: '6, 6' }).addTo(map);
 </script>
 </body>
 </html>
