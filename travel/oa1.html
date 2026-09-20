@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>墨尔本澳网大洋路</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+:root{
+  --bg:#F2F6F3; --surface:#FFFFFF; --ink:#13231C; --muted:#586B62; --line:#D3DFD8;
+  --city:#1E5AA8; --city-soft:#E3EDF9;
+  --road:#1B7449; --road-soft:#E0F1E7;
+  --wrap:#B8501A; --wrap-soft:#FBE8DB;
+  --warn:#7A5200; --warn-bg:#FFF1CF;
+  --shadow:0 1px 2px rgba(19,35,28,.06);
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+  --cond:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1512; --surface:#15211C; --ink:#E7F0EB; --muted:#9DB2A8; --line:#26372F;
+    --city:#7DB0F0; --city-soft:#132338;
+    --road:#5FD08F; --road-soft:#12281E;
+    --wrap:#F0955C; --wrap-soft:#33200F;
+    --warn:#F2C14E; --warn-bg:#2E2610;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1512; --surface:#15211C; --ink:#E7F0EB; --muted:#9DB2A8; --line:#26372F;
+  --city:#7DB0F0; --city-soft:#132338;
+  --road:#5FD08F; --road-soft:#12281E;
+  --wrap:#F0955C; --wrap-soft:#33200F;
+  --warn:#F2C14E; --warn-bg:#2E2610;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;padding-inline:16px;padding-block:0 4rem}
+.wrap{max-width:46rem;margin-inline:auto}
+a{color:inherit}
+h1,h2,h3{text-wrap:balance;line-height:1.25;margin:0}
+p{margin:.4em 0}
+ul{margin:.4em 0;padding-left:1.2em}
+li{margin:.2em 0}
+.num{font-family:var(--cond);font-variant-numeric:tabular-nums}
+
+/* sticky nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:.55rem 16px;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:0 0 auto;text-decoration:none;font-size:.88rem;padding:.25rem .8rem;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--muted)}
+.nav a:hover,.nav a:focus-visible{color:var(--ink);border-color:var(--ink);outline:none}
+
+/* hero */
+.hero{padding-block:2rem 1.2rem}
+.eyebrow{font-family:var(--cond);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:1rem;color:var(--muted)}
+.hero h1{font-size:clamp(1.9rem,6.5vw,2.8rem);font-weight:700;margin:.2rem 0 .6rem}
+.hero p.lead{color:var(--muted);max-width:38rem}
+.flights{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.flight{flex:1 1 15rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.6rem .8rem;box-shadow:var(--shadow)}
+.flight small{display:block;color:var(--muted);font-size:.8rem}
+.flight b{font-family:var(--cond);font-size:1.35rem;font-weight:600;letter-spacing:.02em}
+
+/* route strip */
+.route{list-style:none;margin:1.4rem 0 0;padding:0;display:flex;overflow-x:auto;gap:0}
+.route li{flex:1 0 5.4rem;position:relative;padding-top:1.3rem;margin:0}
+.route li::before{content:"";position:absolute;top:.35rem;left:0;right:0;height:4px;background:var(--c)}
+.route li::after{content:"";position:absolute;top:0;left:0;width:.9rem;height:.9rem;border-radius:50%;background:var(--bg);border:3px solid var(--c)}
+.route a{text-decoration:none;display:block;padding-right:.4rem}
+.route b{display:block;font-family:var(--cond);font-size:1.5rem;line-height:1.1}
+.route span{display:block;font-size:.8rem;color:var(--muted);line-height:1.35}
+.c-city{--c:var(--city)} .c-road{--c:var(--road)} .c-wrap{--c:var(--wrap)}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.8rem;color:var(--muted);margin-top:.6rem}
+.legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;margin-right:.35rem;background:var(--c)}
+
+/* section heads */
+.sec{padding-block:2.2rem 0}
+.sec > h2{font-size:1.5rem;font-weight:700;margin-bottom:.3rem}
+.sec > .sub{color:var(--muted);margin-bottom:1rem}
+
+/* callouts */
+.note{background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:.7rem .9rem;margin:.9rem 0;font-size:.94rem}
+.note b{font-weight:700}
+.est{display:inline-block;font-size:.7rem;line-height:1;padding:.18rem .35rem;border-radius:3px;border:1px solid var(--line);color:var(--muted);vertical-align:.1em;margin-left:.2em;font-family:var(--sans)}
+
+/* checklist */
+.todo{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.4rem .9rem;box-shadow:var(--shadow)}
+.todo label{display:flex;gap:.6rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px solid var(--line);cursor:pointer}
+.todo label:last-child{border-bottom:0}
+.todo input{margin-top:.4rem;accent-color:var(--road);width:1.05rem;height:1.05rem;flex:none}
+.todo input:checked + span{color:var(--muted);text-decoration:line-through}
+.todo input:focus-visible{outline:2px solid var(--road);outline-offset:2px}
+
+/* days */
+.day{margin-top:1.4rem;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:6px;box-shadow:var(--shadow)}
+.day header{display:flex;gap:1rem;align-items:center;padding:.9rem 1rem .5rem}
+.date{flex:none;text-align:center;min-width:3.6rem}
+.date b{display:block;font-family:var(--cond);font-size:2.9rem;line-height:.95;font-weight:700;color:var(--c)}
+.date span{font-size:.78rem;color:var(--muted)}
+.day h3{font-size:1.15rem}
+.day .where{font-size:.85rem;color:var(--muted)}
+.tl{list-style:none;margin:0;padding:.2rem 1rem 1rem}
+.tl li{display:grid;grid-template-columns:4.6rem 1fr;gap:.6rem;padding:.5rem 0;border-top:1px dashed var(--line);margin:0}
+.tl li:first-child{border-top:0}
+.tl time{font-family:var(--cond);font-weight:600;font-size:1.05rem;color:var(--c);font-variant-numeric:tabular-nums;line-height:1.7}
+.tl .heat{background:var(--warn-bg);color:var(--warn);border-radius:5px;padding:.4rem .6rem}
+.tl .heat time{color:var(--warn)}
+.tl li.hot{grid-template-columns:1fr;display:block}
+.tl li.hot div{background:var(--warn-bg);color:var(--warn);border-radius:5px;padding:.5rem .7rem;font-size:.94rem}
+.tl small{color:var(--muted);font-size:.85rem}
+
+/* food */
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0 1rem}
+.chips button{font:inherit;font-size:.88rem;padding:.3rem .85rem;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chips button:focus-visible{outline:2px solid var(--road);outline-offset:2px}
+.food{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.7rem}
+.dish{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.7rem .85rem}
+.dish h4{margin:0;font-size:1rem}
+.dish .at{font-size:.82rem;color:var(--muted)}
+.dish p{font-size:.92rem;margin:.3rem 0 0}
+.dish .tag{display:inline-block;font-size:.72rem;padding:.1rem .45rem;border-radius:3px;margin-top:.4rem;background:var(--road-soft);color:var(--road)}
+.dish[data-cat="road"] .tag{background:var(--wrap-soft);color:var(--wrap)}
+.dish[data-cat="meal"] .tag{background:var(--city-soft);color:var(--city)}
+.dish[hidden]{display:none}
+
+/* tables */
+.scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:.6rem 0}
+table{border-collapse:collapse;width:100%;min-width:34rem;font-size:.9rem}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:.78rem;letter-spacing:.06em;color:var(--muted);font-weight:500;background:var(--bg)}
+td b{font-weight:700}
+.pill{display:inline-block;font-size:.72rem;padding:.08rem .45rem;border-radius:99px;background:var(--road-soft);color:var(--road);white-space:nowrap}
+.pill.far{background:var(--wrap-soft);color:var(--wrap)}
+
+/* cards for transport etc */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.7rem;margin-top:.6rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.8rem .95rem}
+.card h4{margin:0 0 .2rem;font-size:1rem}
+.card ul{font-size:.92rem}
+
+/* footer */
+details{margin-top:2rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.6rem .9rem}
+summary{cursor:pointer;font-weight:500}
+details ul{font-size:.88rem;color:var(--muted)}
+.foot{margin-top:2rem;font-size:.82rem;color:var(--muted)}
+
+@media (max-width:420px){
+  .tl li{grid-template-columns:3.9rem 1fr;gap:.4rem}
+  .date b{font-size:2.4rem}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav" aria-label="章节导航">
+  <a href="#todo">先订</a>
+  <a href="#days">逐日</a>
+  <a href="#food">美食</a>
+  <a href="#shop">购物</a>
+  <a href="#move">交通</a>
+  <a href="#van">房车营地</a>
+  <a href="#pack">天气装备</a>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">Melbourne · Great Ocean Road · 16–22 Jan 2027</div>
+  <h1>澳网三天，加两晚房车大洋路</h1>
+  <p class="lead">16–18 日住墨尔本 CBD 看澳网，19–21 日开房车走到十二使徒，22 日买完球拍和折扣品后飞回基督城。标“估算”的数字是我的推算，出发前请用地图或官网核对。</p>
+  <div class="flights">
+    <div class="flight"><small>去程 · Air NZ · 1/16 周六</small><b>CHC 6:00 → MEL 8:00</b></div>
+    <div class="flight"><small>回程 · Air NZ · 1/22 周五</small><b>MEL 19:10 → CHC 0:35（1/23）</b></div>
+  </div>
+  <ol class="route" aria-label="七天路线">
+    <li class="c-city"><a href="#d16"><b>16</b><span>周六<br>落地 · 练习赛</span></a></li>
+    <li class="c-city"><a href="#d17"><b>17</b><span>周日<br>澳网第 1 天</span></a></li>
+    <li class="c-city"><a href="#d18"><b>18</b><span>周一<br>澳网第 2 天</span></a></li>
+    <li class="c-road"><a href="#d19"><b>19</b><span>周二<br>宿 Cape Otway</span></a></li>
+    <li class="c-road"><a href="#d20"><b>20</b><span>周三<br>宿 Port Campbell</span></a></li>
+    <li class="c-wrap"><a href="#d21"><b>21</b><span>周四<br>还车 · 夜市购物</span></a></li>
+    <li class="c-wrap"><a href="#d22"><b>22</b><span>周五<br>球拍 · 折扣店 · 飞</span></a></li>
+  </ol>
+  <div class="legend">
+    <span class="c-city"><i></i>墨尔本与澳网</span>
+    <span class="c-road"><i></i>房车大洋路</span>
+    <span class="c-wrap"><i></i>收尾购物</span>
+  </div>
+</header>
+
+<section class="sec" id="todo">
+  <h2>现在就要定的事</h2>
+  <p class="sub">勾选状态只保存在这台设备的浏览器里。</p>
+  <div class="todo" id="todolist">
+    <label><input type="checkbox" data-k="t1"><span>11 月 30 日前买澳网 Ground Pass（早鸟 A$49 起）；想坐 Rod Laver Arena 要另买指定座位票</span></label>
+    <label><input type="checkbox" data-k="t2"><span>问租车公司能不能只租 3 天（19–21 日），确认取还车时间、押金、保险自负额</span></label>
+    <label><input type="checkbox" data-k="t3"><span>订 Bimbi Park（19 日晚）和 NRMA Port Campbell Holiday Park（20 日晚）</span></label>
+    <label><input type="checkbox" data-k="t4"><span>订墨尔本 CBD 住宿：16–18 日、21 日晚</span></label>
+    <label><input type="checkbox" data-k="t5"><span>订 21 日晚 Flower Drum 或 Supernormal</span></label>
+    <label><input type="checkbox" data-k="t6"><span>两张 Air NZ Seat 票只含 7kg 手提，需要的话加购托运行李</span></label>
+    <label><input type="checkbox" data-k="t7"><span>安排 1/23 0:35 落地后的接机或叫车</span></label>
+    <label><input type="checkbox" data-k="t8"><span>回新西兰前填好 NZ Traveller Declaration</span></label>
+  </div>
+  <div class="note"><b>机票条件：</b>Seat 票不可退；同舱位同航线可改，每人每次 $100 加补差价；去程误机，回程会被自动取消。</div>
+</section>
+
+<section class="sec" id="days">
+  <h2>逐日行程</h2>
+  <p class="sub">每天午后 12:30–16:00 最热，放进博物馆、美术馆或空调商场。1 月墨尔本平均最高约 24–26°C，热天可超过 35°C。</p>
+
+  <article class="day c-city" id="d16">
+    <header><div class="date"><b>16</b><span>1月 · 周六</span></div><div><h3>落地日 · Opening Week 最后一天</h3><div class="where">住墨尔本 CBD</div></div></header>
+    <ol class="tl">
+      <li><time>4:00</time><div>前到基督城机场，6:00 起飞，墨尔本时间 8:00 落地（比新西兰慢 2 小时）。</div></li>
+      <li><time>9:00</time><div>坐 SkyBus 进城到 Southern Cross，约 30–40 分钟，单程 A$25.90。行李寄酒店，下午才能入住。</div></li>
+      <li><time>10:30</time><div><b>Queen Vic Market</b>（周六 6:00–16:00，特色小店 9:00 开）：American Doughnut Kitchen 的热果酱甜甜圈，Borek Shop 馅饼，Market Lane Coffee。</div></li>
+      <li class="hot"><div><b>12:30–15:00 避暑：</b>去 Federation Square 的 ACMI（免费常设展，10:00–17:00）或 NGV Australia（免费，10:00–17:00）。</div></li>
+      <li><time>15:00</time><div>去 Melbourne Park，用 Ground Pass 看球员练习。</div></li>
+      <li><time>晚上</time><div>唐人街 ShanDong Mama 的鲭鱼饺子。日落约 20:43，早点睡。</div></li>
+    </ol>
+  </article>
+
+  <article class="day c-city" id="d17">
+    <header><div class="date"><b>17</b><span>1月 · 周日</span></div><div><h3>澳网正赛第 1 天</h3><div class="where">住墨尔本 CBD</div></div></header>
+    <ol class="tl">
+      <li><time>10:00</time><div>到场，外围球场逛一圈，选一两场一轮比赛看到底。开赛时间以官网当天赛程为准。</div></li>
+      <li class="hot"><div><b>12:30–16:00 避暑：</b>NGV International（St Kilda Road，免费，10:00–17:00）；或去有屋顶的 John Cain Arena（Ground Pass 含入场，视当天名额）；或去 DFO South Wharf 折扣店吹空调。</div></li>
+      <li><time>16:00</time><div>回场看傍晚场次。周日 Queen Vic Market 9:00–16:00 也开，可以上午先去。</div></li>
+      <li><time>夜场后</time><div>Richmond 的 Victoria Street，一整条街的越南河粉，离 Melbourne Park 不远。</div></li>
+    </ol>
+    <p style="padding:0 1rem 1rem;margin:0" class="where">怎么去：澳网持票者可免费乘 70 路电车接驳（CBD 到 Rod Laver Arena，散场后运行 1 小时）；或从 Flinders Street 站穿 Fed Square 走到 Birrarung Marr，约 10 分钟。</p>
+  </article>
+
+  <article class="day c-city" id="d18">
+    <header><div class="date"><b>18</b><span>1月 · 周一</span></div><div><h3>澳网正赛第 2 天</h3><div class="where">住墨尔本 CBD</div></div></header>
+    <ol class="tl">
+      <li><time>上午</time><div>看球，节奏同前一天。周一 Queen Vic Market 休息。</div></li>
+      <li class="hot"><div><b>12:30–16:00 避暑：</b>Melbourne Museum（Carlton，9:00–17:00，有恐龙步道和 Bunjilaka 原住民文化中心），午餐在旁边的 Lygon Street 吃意式和冰淇淋。</div></li>
+      <li><time>傍晚</time><div>回场看夜场，或去 Bourke Street Mall 逛街。</div></li>
+      <li><time>晚上</time><div>整理行李。只带手提的话，用不到的东西留酒店寄存，21 日回来拿。</div></li>
+    </ol>
+  </article>
+
+  <article class="day c-road" id="d19">
+    <header><div class="date"><b>19</b><span>1月 · 周二</span></div><div><h3>取房车，开到 Cape Otway</h3><div class="where">宿 Bimbi Park · 树袋熊营地</div></div></header>
+    <ol class="tl">
+      <li><time>9:00</time><div>取车。仓库不在市中心（例如 Apollo 在 Somerton，9:00–15:30 营业），提前叫车，留足时间。先在超市买好两天的水和食物。</div></li>
+      <li><time>上午</time><div>Torquay（Bells Beach，墨尔本出发 1 小时 20 分钟），再到 Lorne（Teddy’s Lookout，再 45 分钟）。</div></li>
+      <li><time>下午</time><div>Kennett River 树袋熊步道，走一圈约 20–30 分钟，有大停车场，傍晚人少也凉快。不要靠近树，说话轻一点。之后到 Apollo Bay，去 Apollo Bay Bakery 买招牌扇贝派，把油加满。</div></li>
+      <li><time>傍晚</time><div>到 Bimbi Park（90 Manna Gum Drive）。营地里常能在树上看到很多只树袋熊，有公共厨房，晚上自己做饭最方便。全程纯开车 4 小时以上。<span class="est">估算</span></div></li>
+    </ol>
+  </article>
+
+  <article class="day c-road" id="d20">
+    <header><div class="date"><b>20</b><span>1月 · 周三</span></div><div><h3>十二使徒日</h3><div class="where">宿 NRMA Port Campbell Holiday Park</div></div></header>
+    <ol class="tl">
+      <li><time>早上</time><div>从 Bimbi Park 出发，约 1 小时到十二使徒，尽量 9:00 前到。<span class="est">估算</span> 公园管理局往年 1 月周末有交通管制，11:00 起限速 40km/h，周三会轻松些。</div></li>
+      <li><time>上午</time><div>十二使徒观景台、Gibson Steps、Loch Ard Gorge、London Bridge、The Arch，上午走完，躲开中午最热。</div></li>
+      <li><time>中午</time><div>Port Campbell 小镇吃炸鱼薯条，入住营地午休。</div></li>
+      <li><time>19:45</time><div>回十二使徒看日落，1 月日落约 20:40，带外套。</div></li>
+    </ol>
+  </article>
+
+  <article class="day c-wrap" id="d21">
+    <header><div class="date"><b>21</b><span>1月 · 周四</span></div><div><h3>内陆回墨尔本，夜市购物</h3><div class="where">住墨尔本 CBD</div></div></header>
+    <ol class="tl">
+      <li><time>8:30</time><div>退房出发，经 Colac 走内陆回墨尔本，约 3.5 小时。<span class="est">估算</span> 途中加满油、吃午餐。</div></li>
+      <li><time>14:30</time><div>前还车。例如 Apollo 仓库要求在 15:30 关门前一小时到。回 CBD 入住，取回寄存的行李。</div></li>
+      <li><time>18:00</time><div>逛 Bourke Street Mall、Emporium、Melbourne Central。周四商店营业到 21:00。</div></li>
+      <li><time>晚上</time><div>Flower Drum 的北京烤鸭或 Supernormal 的龙虾卷，都要提前订位。</div></li>
+    </ol>
+  </article>
+
+  <article class="day c-wrap" id="d22">
+    <header><div class="date"><b>22</b><span>1月 · 周五</span></div><div><h3>球拍、折扣店、去机场</h3><div class="where">19:10 起飞</div></div></header>
+    <ol class="tl">
+      <li><time>9:00</time><div>退房，行李随身带，打车去 Prelli Tennis。</div></li>
+      <li><time>10:00</time><div><b>Prelli Tennis</b>，207–209 Victoria Parade, Collingwood，周五 10:00–17:00。Yonex、Wilson、Head、Babolat 等，有试拍和穿线。</div></li>
+      <li><time>11:30</time><div>Queen Vic Market（周五 6:00–15:00）吃午饭，买 Tim Tams、Vegemite 等伴手礼。</div></li>
+      <li><time>13:15</time><div>打车去 <b>DFO Essendon</b>，100 Bulla Road，每天 10:00–18:00。离 CBD 约 20 分钟车程，离机场约 10 分钟车程。</div></li>
+      <li><time>13:45</time><div>逛到 16:15。中心提供免费行李寄存。</div></li>
+      <li><time>16:30</time><div>前打车去机场，约 10 到 15 分钟。<span class="est">估算</span> 17:00 前到，起飞前至少 90 分钟过完边检，才来得及办退税。</div></li>
+      <li><time>19:10</time><div>起飞，1/23 0:35 落地基督城。提前安排接机或叫车。</div></li>
+    </ol>
+  </article>
+</section>
+
+<section class="sec" id="food">
+  <h2>美食小吃</h2>
+  <p class="sub">墨尔本的强项是咖啡、多元亚洲菜和小巷里的小店。价格取自媒体报道，仅供参考。</p>
+  <div class="chips" role="group" aria-label="按类型筛选">
+    <button type="button" data-f="all" aria-pressed="true">全部</button>
+    <button type="button" data-f="sweet" aria-pressed="false">咖啡点心</button>
+    <button type="button" data-f="snack" aria-pressed="false">街头小吃</button>
+    <button type="button" data-f="meal" aria-pressed="false">正餐</button>
+    <button type="button" data-f="road" aria-pressed="false">大洋路</button>
+  </div>
+  <div class="food" id="foodgrid">
+    <div class="dish" data-cat="sweet"><h4>热果酱甜甜圈</h4><div class="at">American Doughnut Kitchen · Queen Vic Market</div><p>1950 年代起就在，蓝白小车现炸，约 A$10 五个。</p><span class="tag">咖啡点心</span></div>
+    <div class="dish" data-cat="sweet"><h4>Lune 可颂</h4><div class="at">Fitzroy</div><p>约 A$7.10 一个，排队人多，早点去。</p><span class="tag">咖啡点心</span></div>
+    <div class="dish" data-cat="sweet"><h4>Melbourne Magic 咖啡</h4><div class="at">Seven Seeds · Industry Beans</div><p>本地咖啡文化的代表，喝一杯就明白。</p><span class="tag">咖啡点心</span></div>
+    <div class="dish" data-cat="sweet"><h4>篝火热巧克力</h4><div class="at">Mörk Chocolate</div><p>天热时可以点冰的，或者留给晚上。</p><span class="tag">咖啡点心</span></div>
+    <div class="dish" data-cat="sweet"><h4>Haigh’s 巧克力</h4><div class="at">Block Arcade 旗舰店</div><p>22 日之前买伴手礼，回新西兰要申报。</p><span class="tag">咖啡点心</span></div>
+    <div class="dish" data-cat="snack"><h4>Borek 馅饼</h4><div class="at">Borek Shop · Queen Vic Market 入口</div><p>市场逛街时的热点心。</p><span class="tag">街头小吃</span></div>
+    <div class="dish" data-cat="snack"><h4>Dim Sim</h4><div class="at">South Melbourne Market</div><p>1949 年起营业的老摊，澳洲式大只点心。</p><span class="tag">街头小吃</span></div>
+    <div class="dish" data-cat="snack"><h4>鸡肉 Tawouk 卷饼</h4><div class="at">A1 Lebanese Bakery · Brunswick</div><p>烤过的卷饼里有腌鸡肉、薯条和酸黄瓜，约 A$14。</p><span class="tag">街头小吃</span></div>
+    <div class="dish" data-cat="snack"><h4>Saltbush 土豆饼</h4><div class="at">Stokehouse · St Kilda</div><p>外壳像天妇罗，约 A$8。</p><span class="tag">街头小吃</span></div>
+    <div class="dish" data-cat="snack"><h4>川味面</h4><div class="at">Hi Chong Qing · Carlton</div><p>又辣又香，约 A$16，去 Melbourne Museum 前后顺路。</p><span class="tag">街头小吃</span></div>
+    <div class="dish" data-cat="meal"><h4>鲭鱼饺子</h4><div class="at">ShanDong Mama · 唐人街</div><p>16 日晚上的第一顿。</p><span class="tag">正餐</span></div>
+    <div class="dish" data-cat="meal"><h4>越南河粉</h4><div class="at">Victoria Street · Richmond</div><p>17 日夜场之后，离 Melbourne Park 不远。</p><span class="tag">正餐</span></div>
+    <div class="dish" data-cat="meal"><h4>意式和冰淇淋</h4><div class="at">Lygon Street · Carlton</div><p>18 日去 Melbourne Museum 前后吃。</p><span class="tag">正餐</span></div>
+    <div class="dish" data-cat="meal"><h4>北京烤鸭 / 龙虾卷</h4><div class="at">Flower Drum · Supernormal</div><p>21 日晚，要提前订位。</p><span class="tag">正餐</span></div>
+    <div class="dish" data-cat="road"><h4>扇贝派 Scallop Pie</h4><div class="at">Apollo Bay Bakery · 125 Great Ocean Road</div><p>招牌，19 日路过 Apollo Bay 时买来当午餐。</p><span class="tag">大洋路</span></div>
+    <div class="dish" data-cat="road"><h4>海滩早餐</h4><div class="at">Salty Dog Café · Torquay</div><p>19 日早上出发不久就能吃到。</p><span class="tag">大洋路</span></div>
+    <div class="dish" data-cat="road"><h4>炸鱼薯条</h4><div class="at">Lorne · Port Campbell</div><p>沿海小镇的经典吃法，营业时间出发前再查。</p><span class="tag">大洋路</span></div>
+    <div class="dish" data-cat="road"><h4>意式披萨 / 酒吧餐</h4><div class="at">Nico’s Pizza and Pasta · Port Campbell Hotel</div><p>20 日晚在 Port Campbell 的选择。</p><span class="tag">大洋路</span></div>
+  </div>
+</section>
+
+<section class="sec" id="shop">
+  <h2>博物馆与购物</h2>
+  <p class="sub">避暑就近选免费展馆；最后一天用来买球拍和折扣品。</p>
+
+  <h3 style="margin-top:1rem">博物馆与美术馆</h3>
+  <div class="scroll"><table>
+    <tr><th>场馆</th><th>地点</th><th>开放与门票</th><th>适合时段</th></tr>
+    <tr><td><b>ACMI</b></td><td>Federation Square</td><td>每天 10:00–17:00；常设展免费</td><td>16 日午后</td></tr>
+    <tr><td><b>NGV Australia</b></td><td>Federation Square</td><td>每天 10:00–17:00；免费，特展可能收费</td><td>16 日午后，和 ACMI 一起逛</td></tr>
+    <tr><td><b>NGV International</b></td><td>180 St Kilda Road</td><td>每天 10:00–17:00；免费，特展可能收费</td><td>17 日午后</td></tr>
+    <tr><td><b>Melbourne Museum</b></td><td>11 Nicholson St, Carlton</td><td>每天 9:00–17:00；票价没查到，官网确认</td><td>18 日午后</td></tr>
+    <tr><td><b>Australian Sports Museum</b></td><td>MCG，隔 Yarra Park 与 Melbourne Park 相邻</td><td>开放时间和票价没查到，以 MCG 官网为准</td><td>想看体育题材时</td></tr>
+  </table></div>
+
+  <h3 style="margin-top:1.4rem">22 日：机场旁的 DFO Essendon</h3>
+  <div class="cards">
+    <div class="card"><h4>基本信息</h4><ul>
+      <li>100 Bulla Road, Essendon Fields，每天 10:00–18:00</li>
+      <li>离 CBD 约 20 分钟车程，离机场约 10 分钟车程</li>
+      <li>100 多个品牌，含免费行李寄存</li>
+    </ul></div>
+    <div class="card"><h4>品牌</h4><ul>
+      <li>Armani Outlet、Coach、Fossil、Hugo Boss、Lacoste、Lindt、Mimco、Oroton、Seafolly、Williams Sonoma Outlet</li>
+      <li>运动品牌没在该处的介绍里列出；想买 Nike、Adidas 可去 DFO South Wharf，17 日避暑时顺路。</li>
+    </ul></div>
+  </div>
+
+  <h3 style="margin-top:1.4rem">网球店</h3>
+  <div class="scroll"><table>
+    <tr><th>店</th><th>地点</th><th>营业</th><th>特点</th><th>顺路吗</th></tr>
+    <tr><td><b>Prelli Tennis</b></td><td>207–209 Victoria Parade, Collingwood</td><td>周一至周五 10:00–17:00，周六 9:30–16:30</td><td>球拍、鞋服、试拍、穿线；Yonex、Wilson、Head、Babolat</td><td><span class="pill">离 CBD 最近</span></td></tr>
+    <tr><td><b>Racquet World</b></td><td>Shop 4/59 Willandra Drive, Epping</td><td>没查到；电话 (03) 9525 6559</td><td>穿线当天或 24 小时取，卖 Tecnifibre、Babolat、Yonex、Solinco 线</td><td><span class="pill far">在北部，要专程</span></td></tr>
+    <tr><td><b>Tension 24</b></td><td>629 High St Rd, Mount Waverley</td><td>周一至周五 10:00–17:00，周六 9:00–16:00</td><td>Babolat、Wilson、Yonex；现场穿线；卖穿线机</td><td><span class="pill far">在东南，要专程</span></td></tr>
+  </table></div>
+
+  <h3 style="margin-top:1.4rem">乐器店</h3>
+  <p class="where" style="color:var(--muted);font-size:.92rem">机场附近没查到乐器店，CBD 的 Allans Billy Hyde 已关门。下面几家都在 CBD 以东和东南，不顺路，除非目标明确，否则不建议专程去。</p>
+  <div class="scroll"><table>
+    <tr><th>店</th><th>地点</th><th>营业</th><th>卖什么</th></tr>
+    <tr><td><b>Sky Music</b></td><td>4/2181 Princes Highway, Clayton</td><td>周一至周五 10:00–18:00，周六 10:00–17:00，周日 12:00–17:00</td><td>鼓、数码钢琴、键盘</td></tr>
+    <tr><td><b>Billy Hyde Music</b></td><td>242 Whitehorse Road, Nunawading</td><td>周一至周五 10:00–18:00，周六 10:00–17:00，周日 12:00–17:00</td><td>鼓、键盘、合成器</td></tr>
+    <tr><td><b>World of Music</b></td><td>809 Nepean Highway, East Brighton</td><td>周一至周五 10:00–17:30，周六 10:00–16:00</td><td>鼓、数码钢琴</td></tr>
+  </table></div>
+  <div class="note">只带 7kg 手提行李时，鼓棒、鼓皮这类小件最合适。买球拍要看 Air NZ 的手提尺寸限制，或加购托运。</div>
+
+  <h3 style="margin-top:1.4rem">CBD 购物</h3>
+  <div class="scroll"><table>
+    <tr><th>地方</th><th>特色</th><th>建议</th></tr>
+    <tr><td><b>Bourke Street Mall</b></td><td>Myer、David Jones、H&amp;M、Uniqlo、Zara、Sephora</td><td>21 日周四晚上，营业到 21:00</td></tr>
+    <tr><td><b>Emporium Melbourne</b></td><td>设计师品牌和澳洲本土品牌，如 Scanlan Theodore、Aje</td><td>和 Bourke Street Mall 一起逛</td></tr>
+    <tr><td><b>Melbourne Central</b></td><td>Daiso、Lush、Muji、Culture Kings</td><td>空调商场，适合避暑</td></tr>
+    <tr><td><b>Block Arcade · Royal Arcade</b></td><td>历史拱廊，Haigh’s Chocolates 旗舰店在 Block Arcade</td><td>随时可逛</td></tr>
+  </table></div>
+  <p style="font-size:.9rem;color:var(--muted)">CBD 营业时间：周一至周三 9:30–18:00，周四 9:30–21:00，周五到 19:00（部分店到 21:00），周六 9:30–17:00，周日 10:00–18:00。</p>
+
+  <h3 style="margin-top:1.4rem">值得带回去的东西</h3>
+  <ul>
+    <li>Aesop 护肤品（墨尔本创立）。只带手提行李的话选 100mL 以内。</li>
+    <li>R.M. Williams 短靴，经典款约 A$580–650；Akubra 毛毡帽。</li>
+    <li>Haigh’s 巧克力、Tim Tams、Vegemite、咖啡豆。回新西兰要申报。</li>
+    <li>Yarra Valley 葡萄酒等液体要托运，只带手提行李就别买。</li>
+  </ul>
+
+  <h3 style="margin-top:1.4rem">退税与入境新西兰</h3>
+  <ul>
+    <li>退税（TRS）：同一商家一次满 A$300（含 GST），购买后 60 天内离境。在墨尔本机场 T2 出发层办理，商品要随身手提，起飞前至少 90 分钟过完边检。液体、胶状物要先让边防检查再托运。</li>
+    <li>回新西兰：所有食品都要在 NZ Traveller Declaration 上申报。鲜果蔬和猪肉制品不能带，蜂蜜有数量限制。房车上剩的水果、蔬菜、肉在还车前吃完或处理掉。</li>
+  </ul>
+</section>
+
+<section class="sec" id="move">
+  <h2>交通攻略</h2>
+  <p class="sub">市区靠免费电车区和澳网的免费 70 路接驳；开房车的重点是加油、避开夜路和收费道路。</p>
+  <div class="cards">
+    <div class="card"><h4>机场往返</h4><ul>
+      <li>SkyBus 到 Southern Cross，单程 A$25.90，往返 A$43.40，约每 10 分钟一班，车程 30–40 分钟。</li>
+      <li>22 日改打车去机场时，16 日只买单程；22 日仍坐 SkyBus，往返票比两张单程便宜约 A$8。</li>
+    </ul></div>
+    <div class="card"><h4>市内</h4><ul>
+      <li>CBD 免费电车区：北到 Victoria St，东到 Spring St，南到 Flinders St 和 Yarra，西到 Docklands Drive，包括 Queen Vic Market 一头。</li>
+      <li>Melbourne Park 在 Spring St 以东，不在免费区内。</li>
+      <li>免费区外要用 myki 卡，上下车都要刷，逃票罚款高达 A$277。myki 在 7-Eleven 或车站买；是否可以直接刷银行卡，出发前查 PTV 官网。</li>
+    </ul></div>
+    <div class="card"><h4>去 Melbourne Park</h4><ul>
+      <li>澳网持票者可免费乘 70 路电车接驳，从 CBD 到 Rod Laver Arena 站，运行到散场后 1 小时。</li>
+      <li>从 Flinders Street 站穿 Fed Square 到 Birrarung Marr，步行约 10 分钟。</li>
+      <li>Uber 专用上车区在 Olympic Boulevard，D 门和 G 门之间。</li>
+    </ul></div>
+    <div class="card"><h4>房车驾驶</h4><ul>
+      <li>靠左行驶，和新西兰一样。带上新西兰驾照，问清租车公司的要求。</li>
+      <li>墨尔本有 Linkt、EastLink 电子收费道路；取车时问清怎么处理，不然会收手续费。Linkt 可以在用路后 3 天内补付。导航设置“避开收费道路”。</li>
+      <li>Lorne、Apollo Bay、Port Campbell 之间加油站不多，在 Apollo Bay 加满再去 Bimbi Park，下一次在 Port Campbell 加。</li>
+      <li>尽量天黑前到营地，傍晚袋鼠和沙袋鼠会出没在路边。山区信号差，下载离线地图。紧急电话 000。</li>
+      <li>十二使徒旺季交通管制时限速 40km/h。</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="sec" id="van">
+  <h2>房车与营地</h2>
+  <div class="note"><b>最大的风险在租期和取还车时间。</b>比价网站称多数公司通常要求至少租 7 天（随季节变化）；仓库在机场一带而不是市中心；收车时间在下午 3 点前后。订之前先问清 3 天能不能租。如果公司要求至少 4 天，改成 19–22 日，22 日 14:30 前在机场一带的仓库还车后直接去机场，代价是 22 日没有球拍店和折扣店的行程。</div>
+
+  <h3 style="margin-top:1.2rem">租车公司</h3>
+  <div class="scroll"><table>
+    <tr><th>公司</th><th>墨尔本取还车信息</th><th>备注</th></tr>
+    <tr><td><b>Apollo</b></td><td>40 Hume Highway, Somerton；每天 9:00–15:30，要在关门前一小时到（14:30 前）</td><td>押金 A$250，取车前 30 天付清余款；仓库只收信用卡或借记卡，不收现金；有 2 人 Hitop 等车型</td></tr>
+    <tr><td><b>Britz</b></td><td>Britz Melbourne 分店；电话 1300 738 087</td><td>2 人 HiTop、2 人 Trailblazer、4 人 Voyager</td></tr>
+    <tr><td><b>Jucy · Maui 等</b></td><td>到各家官网或比价网站查</td><td>Motorhome Republic 列出了十几家；冬季简单小车每晚约 A$45 起，夏季旺季 6 人豪华车可超过 A$500，1 月要实际询价</td></tr>
+  </table></div>
+  <ul>
+    <li>驾照：需要本国有效驾照，英文驾照即可；年龄一般 21 岁以上。</li>
+    <li>押金、保险自负额各家不一样，订车前问清。</li>
+    <li>19 日取车、21 日还车都要从市区往机场一带走，叫车时间提前留出来。</li>
+  </ul>
+
+  <h3 style="margin-top:1.2rem">营地</h3>
+  <div class="scroll"><table>
+    <tr><th>营地</th><th>位置</th><th>特点</th><th>价格与预订</th></tr>
+    <tr><td><b>Bimbi Park</b></td><td>90 Manna Gum Drive, Cape Otway</td><td>树袋熊营地，有带电、无电、丛林营位；公共厨房、投币淋浴、篝火坑</td><td>淡季起价：无电 A$45、带电 A$55（每对每晚），1 月旺季会更贵；没写旺季最少住几晚。电话 (03) 5237 9246，邮件 info@bimbipark.com.au</td></tr>
+    <tr><td><b>NRMA Port Campbell Holiday Park</b></td><td>Port Campbell</td><td>带电营位分高级（有垫子）和标准（有 BBQ 区）；公共厨房、游戏室</td><td>价格和最大车长没查到，电话 03 5598 6492</td></tr>
+  </table></div>
+  <p style="font-size:.9rem;color:var(--muted)">备选：Apollo Bay Holiday Park、Marengo Holiday Park。</p>
+  <ul>
+    <li>野营不合法，只住营地。大洋路沿线大部分营地都建议提前订，尤其是 Port Campbell。</li>
+    <li>夏季是火灾季，遇到官方公布的 Total Fire Ban 日不能生明火，篝火坑也可能被禁。随时关注当天公告。</li>
+    <li>Bimbi Park 保护野生动物，不要靠近或喂食树袋熊。</li>
+    <li>取车时拍照检查车身，学会燃气、水箱、床铺的用法。</li>
+  </ul>
+</section>
+
+<section class="sec" id="pack">
+  <h2>天气与装备</h2>
+  <div class="cards">
+    <div class="card"><h4>天气</h4><ul>
+      <li>1 月墨尔本平均最高约 24–26°C，夜间约 13–14°C，每天下雨概率约 15%，热天可能超过 35°C。</li>
+      <li>16 日日出约 6:15，日落约 20:43；31 日日落约 20:34。</li>
+    </ul></div>
+    <div class="card"><h4>装备</h4><ul>
+      <li>帽子、太阳镜、防晒霜，球场和十二使徒都很暴晒。</li>
+      <li>沿海傍晚风大，带一件薄外套和轻便雨衣。</li>
+      <li>只有 7kg 手提，液体要小瓶。球场对包和饮水的规定没查到，出发前看 Melbourne Park 官网 FAQ。</li>
+      <li>离线地图、充电宝。</li>
+    </ul></div>
+  </div>
+
+  <details>
+    <summary>资料来源</summary>
+    <ul>
+      <li><a href="https://www.melbournepark.com.au/news/australian-open-2027-your-ultimate-guide/">Australian Open 2027: Your Ultimate Guide</a></li>
+      <li><a href="https://ausopen.com/visit/event-info/getting-here">AO Getting Here</a></li>
+      <li><a href="https://www.airnewzealand.com/en-nz/book/fare-rules/short-haul-seat">Air NZ Seat 票条件</a></li>
+      <li><a href="https://www.camplify.com.au/blog/the-best-great-ocean-road-itinerary-road-trip-in-australia">Great Ocean Road itinerary - Camplify</a></li>
+      <li><a href="https://bimbipark.com.au/campsites/">Bimbi Park</a></li>
+      <li><a href="https://www.parks.vic.gov.au/media-releases/2024/12/17/02/58/summer-traffic-changes-around-twelve-apostles">Parks Victoria：十二使徒夏季交通管制</a></li>
+      <li><a href="https://visitgreatoceanroad.org.au/restaurants/apollo-bay-bakery/">Apollo Bay Bakery</a></li>
+      <li><a href="https://www.racv.com.au/royalauto/travel/victoria/the-best-great-ocean-road-foodie-experiences.html">RACV 大洋路美食</a></li>
+      <li><a href="https://qvm.com.au/blog/faq/when-is-the-market-open/">Queen Victoria Market 营业时间</a></li>
+      <li><a href="https://www.ngv.vic.gov.au/plan-your-visit/">NGV</a></li>
+      <li><a href="https://www.acmi.net.au/visit/">ACMI</a></li>
+      <li><a href="https://museumsvictoria.com.au/melbournemuseum/">Melbourne Museum</a></li>
+      <li><a href="https://www.melbournetourism.org/best-shopping-in-melbourne/">Melbourne 购物指南</a></li>
+      <li><a href="https://www.essendon.dfo.com.au/directions/getting-here">DFO Essendon</a></li>
+      <li><a href="https://melbourneairport.holidayinn.com/things-to-do-around-melbourne-airport/dfo-essendon/">DFO Essendon 品牌（Holiday Inn Melbourne Airport）</a></li>
+      <li><a href="https://prellitennis.com.au/">Prelli Tennis</a> · <a href="https://www.racquetworld.com.au/collections/re-stringing-melbourne">Racquet World</a> · <a href="https://tension24.com.au/">Tension 24</a></li>
+      <li><a href="https://skymusic.com.au/pages/drumshop">Sky Music</a> · <a href="https://billyhydemusic.com.au/pages/home">Billy Hyde Music</a> · <a href="https://www.worldofmusic.com.au/drums/">World of Music</a></li>
+      <li><a href="https://www.skybus.com.au/melbourne-city-express/fares/">SkyBus</a> · <a href="https://melbz.com.au/guides/are-trams-free-melbourne/">MELBZ 免费电车区</a></li>
+      <li><a href="https://www.apollocamper.com/locations/campervan/melbourne">Apollo 墨尔本</a> · <a href="https://www.britz.com/au/en/get-inspired/driving-routes-australia/great-ocean-road">Britz</a> · <a href="https://www.motorhomerepublic.com/australia/melbourne-motorhome-rental">Motorhome Republic</a></li>
+      <li><a href="https://www.melbourneairport.com.au/tourist-refund-scheme">Melbourne Airport 退税</a> · <a href="https://www.mpi.govt.nz/bring-send-to-nz/bringing-and-posting-items-to-nz/check-if-you-can-bring-or-send-an-item-to-nz/bringing-food-to-nz">MPI 带食品入境</a></li>
+      <li><a href="https://www.timeout.com/melbourne/restaurants/must-eat-melbourne-dishes">Time Out 必吃美食</a> · <a href="https://www.visitvictoria.com/regions/melbourne/eat-and-drink/11-must-try-melbourne-dishes-and-drinks">Visit Victoria</a></li>
+      <li><a href="https://weatherspark.com/m/144227/1/Average-Weather-in-January-in-Melbourne-Victoria-Australia">Weather Spark</a></li>
+    </ul>
+  </details>
+  <p class="foot">资料整理于 2026 年 9 月 20 日。营业时间、价格和赛程可能变化，出发前再核对。</p>
+</section>
+</div>
+
+<script>
+(function(){
+  // 待办清单：只在本设备保存勾选状态
+  var KEY = "mel-ao-2027-todo";
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
+  var boxes = document.querySelectorAll("#todolist input[type=checkbox]");
+  boxes.forEach(function(b){
+    if (saved[b.dataset.k]) b.checked = true;
+    b.addEventListener("change", function(){
+      saved[b.dataset.k] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+    });
+  });
+
+  // 美食筛选
+  var chips = document.querySelectorAll(".chips button");
+  var dishes = document.querySelectorAll("#foodgrid .dish");
+  chips.forEach(function(c){
+    c.addEventListener("click", function(){
+      var f = c.dataset.f;
+      chips.forEach(function(x){ x.setAttribute("aria-pressed", x === c ? "true" : "false"); });
+      dishes.forEach(function(d){ d.hidden = !(f === "all" || d.dataset.cat === f); });
+    });
+  });
+})();
+</script>
+</body>
+</html>
